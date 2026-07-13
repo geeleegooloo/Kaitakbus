@@ -16,7 +16,7 @@ box-sizing:border-box;
 
 body{
 background:#000;
-color:white;
+color:#fff;
 font-family:-apple-system,BlinkMacSystemFont,sans-serif;
 padding:15px;
 }
@@ -29,7 +29,7 @@ margin-bottom:15px;
 }
 
 .title{
-font-size:36px;
+font-size:34px;
 font-weight:bold;
 }
 
@@ -54,26 +54,53 @@ justify-content:space-between;
 align-items:center;
 }
 
+.left{
+flex:1;
+}
+
 .route{
-font-size:50px;
+font-size:42px;
 font-weight:bold;
 }
 
-.eta{
+.dest{
+font-size:16px;
+color:#999;
+margin-top:4px;
+}
+
+.right{
+text-align:right;
+}
+
+.first{
 font-size:30px;
 font-weight:bold;
 color:#00ff66;
 }
 
-.arriving{
-color:#ffd600;
-animation:blink 1s infinite;
+.second{
+font-size:16px;
+color:#999;
+margin-top:4px;
 }
 
-@keyframes blink{
+.arriving{
+color:#ffd600;
+animation:pulse 1s infinite;
+}
+
+@keyframes pulse{
 50%{
 opacity:0.4;
 }
+}
+
+.footer{
+text-align:center;
+color:#666;
+margin-top:12px;
+font-size:14px;
 }
 
 </style>
@@ -97,33 +124,65 @@ opacity:0.4;
 </div>
 
 <div class="card">
+<div class="left">
 <div class="route">20A</div>
-<div class="eta" id="eta20A">--</div>
+<div class="dest">西九龍站</div>
+</div>
+<div class="right" id="eta20A">
+--
+</div>
 </div>
 
 <div class="card">
+<div class="left">
 <div class="route">22</div>
-<div class="eta" id="eta22">--</div>
+<div class="dest">九龍塘（又一城）</div>
+</div>
+<div class="right" id="eta22">
+--
+</div>
 </div>
 
 <div class="card">
+<div class="left">
 <div class="route">22D</div>
-<div class="eta" id="eta22D">--</div>
+<div class="dest">啟德站</div>
+</div>
+<div class="right" id="eta22D">
+--
+</div>
 </div>
 
 <div class="card">
+<div class="left">
 <div class="route">22M</div>
-<div class="eta" id="eta22M">--</div>
+<div class="dest">土瓜灣</div>
+</div>
+<div class="right" id="eta22M">
+--
+</div>
+</div>
+
+<div class="footer">
+承景街（003790）｜ 每15秒更新
 </div>
 
 <script>
 
 const STOP_ID = "003790";
-const ROUTES = ["20A","22","22D","22M"];
+
+const ROUTES = [
+"20A",
+"22",
+"22D",
+"22M"
+];
 
 function updateClock(){
+
 document.getElementById("clock").innerHTML =
 new Date().toLocaleTimeString("zh-HK");
+
 }
 
 setInterval(updateClock,1000);
@@ -154,68 +213,91 @@ document.getElementById("weather").innerHTML =
 "天氣資料未能載入";
 
 }
-
 }
 
 async function loadETA(route){
 
 try{
 
-const url =
-`https://rt.data.gov.hk/v1/transport/citybus-nwfb/eta/ctb/${STOP_ID}/${route}`;
+const res = await fetch(
+`https://rt.data.gov.hk/v1/transport/citybus-nwfb/eta/ctb/${STOP_ID}/${route}`
+);
 
-const res =
-await fetch(url);
-
-const json =
-await res.json();
+const json = await res.json();
 
 const target =
 document.getElementById(
-"eta"+route
+"eta" + route
 );
 
 if(
 !json.data ||
-json.data.length===0
+json.data.length === 0
 ){
+
 target.innerHTML="--";
 return;
+
 }
 
-const etaTime =
+const firstEta =
 new Date(json.data[0].eta);
 
-const diff =
+const firstMin =
 Math.round(
-(etaTime - new Date())
-/60000
+(firstEta - new Date())
+/
+60000
 );
 
-if(diff<=1){
+let firstText;
 
-target.innerHTML="即將到站";
-target.classList.add("arriving");
+if(firstMin <= 1){
 
-}
-else{
+firstText =
+'<div class="first arriving">即將到站</div>';
 
-target.innerHTML=
-diff+"分鐘";
+}else{
 
-target.classList.remove("arriving");
-
-}
-
-}catch(err){
-
-console.log(err);
+firstText =
+`<div class="first">${firstMin}分鐘</div>`;
 
 }
 
+let secondText = "";
+
+if(
+json.data.length > 1 &&
+json.data[1].eta
+){
+
+const secondEta =
+new Date(json.data[1].eta);
+
+const secondMin =
+Math.round(
+(secondEta - new Date())
+/
+60000
+);
+
+secondText =
+`<div class="second">
+下班 ${secondMin}分鐘
+</div>`;
 }
 
-async function refresh(){
+target.innerHTML =
+firstText + secondText;
+
+}catch(e){
+
+console.log(e);
+
+}
+}
+
+async function refreshETA(){
 
 for(const route of ROUTES){
 
@@ -226,11 +308,10 @@ await loadETA(route);
 }
 
 loadWeather();
-
-refresh();
+refreshETA();
 
 setInterval(
-refresh,
+refreshETA,
 15000
 );
 
