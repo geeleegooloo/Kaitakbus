@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>承景街巴士站</title>
+<title>承景街巴士到站時間</title>
 
 <style>
 
@@ -22,19 +22,13 @@ padding:10px;
 }
 
 .header{
-
 background:#d61f26;
-
 border-radius:16px;
-
 padding:12px 18px;
-
 margin-bottom:12px;
 
 display:flex;
-
 justify-content:space-between;
-
 align-items:flex-start;
 }
 
@@ -47,132 +41,101 @@ text-align:right;
 }
 
 .title{
-
 font-size:28px;
-
 font-weight:700;
-
 margin-bottom:6px;
 }
 
 .weather{
-
 font-size:16px;
-
 margin-bottom:4px;
 }
 
 .warning{
-
 font-size:15px;
-
 font-weight:700;
-
 color:#ffe082;
 }
 
 .clock{
-
 font-size:42px;
-
 font-weight:700;
-
 line-height:1;
 }
 
 .date{
-
 font-size:15px;
-
 margin-top:5px;
 }
 
 .grid{
-
 display:grid;
-
 grid-template-columns:1fr 1fr;
-
 gap:12px;
 }
 
 .card{
-
 background:#080808;
-
 border:1px solid #1c1c1c;
-
 border-radius:20px;
 
 padding:20px;
 
-min-height:220px;
+min-height:150px;
+
+display:flex;
+justify-content:space-between;
+align-items:flex-start;
+}
+
+.left{
+flex:1;
+}
+
+.right{
+text-align:right;
 }
 
 .route{
-
 font-size:64px;
-
 font-weight:700;
-
 line-height:1;
 }
 
 .dest{
-
 font-size:18px;
-
 color:#a0a0a0;
-
 margin-top:10px;
-
-margin-bottom:18px;
 }
 
 .eta-main{
-
 font-size:42px;
-
 font-weight:700;
-
 color:#00ff66;
-
-margin-top:10px;
 }
 
 .eta-next{
-
 font-size:22px;
-
 color:#888;
-
 margin-top:8px;
 }
 
 .arriving{
-
 color:#ffd600;
-
 animation:pulse 1s infinite;
 }
 
 @keyframes pulse{
-
 50%{
 opacity:0.4;
 }
-
 }
 
 .footer{
-
 text-align:center;
-
 color:#666;
-
-margin-top:8px;
-
 font-size:13px;
+margin-top:10px;
 }
 
 @media(max-width:1024px){
@@ -189,10 +152,15 @@ font-size:52px;
 font-size:34px;
 }
 
+.eta-main{
+font-size:34px;
+}
+
 }
 
 </style>
 </head>
+
 <body>
 
 <div class="header">
@@ -207,7 +175,8 @@ font-size:34px;
 載入天氣中...
 </div>
 
-<div class="warning" id="warning"></div>
+<div class="warning" id="warning">
+</div>
 
 </div>
 
@@ -310,6 +279,8 @@ document.getElementById(
 ).innerHTML =
 
 `
+<div class="left">
+
 <div class="route">
 ${route}
 </div>
@@ -318,12 +289,18 @@ ${route}
 ${dest}
 </div>
 
+</div>
+
+<div class="right">
+
 <div class="eta-main ${arriving}">
 ${first}
 </div>
 
 <div class="eta-next">
 下班 ${second}
+</div>
+
 </div>
 `;
 
@@ -358,8 +335,7 @@ for(const bus of buses){
 const mins =
 Math.round(
 (new Date(bus.eta)-new Date())
-/
-60000
+/60000
 );
 
 if(mins <= 1){
@@ -431,9 +407,7 @@ document.getElementById(
 ).innerHTML =
 `🌡️ ${temp}°C　💧 ${humid}%`;
 
-}catch(e){
-
-}
+}catch(e){}
 
 }
 
@@ -476,9 +450,7 @@ warnings.length
 :
 "";
 
-}catch(e){
-
-}
+}catch(e){}
 
 }
 
