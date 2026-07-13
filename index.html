@@ -18,160 +18,240 @@ body{
 background:#000;
 color:#fff;
 font-family:-apple-system,BlinkMacSystemFont,sans-serif;
-padding:15px;
+padding:12px;
 }
 
 .header{
+
 background:#d61f26;
+
 border-radius:20px;
-padding:15px;
-margin-bottom:12px;
-}
 
-.title{
-font-size:28px;
-font-weight:bold;
-}
+padding:14px 20px;
 
-.weather{
-margin-top:6px;
-font-size:16px;
-}
+margin-bottom:14px;
 
-.clock{
-font-size:30px;
-font-weight:bold;
-margin-top:8px;
-}
-
-.card{
-background:#111;
-border-radius:18px;
-padding:20px;
-margin-bottom:12px;
 display:flex;
+
 justify-content:space-between;
-align-items:center;
+
+align-items:flex-start;
+
 }
 
-.left{
+.header-left{
 flex:1;
 }
 
-.route{
-font-size:42px;
-font-weight:bold;
-}
-
-.dest{
-font-size:16px;
-color:#999;
-margin-top:4px;
-}
-
-.right{
+.header-right{
 text-align:right;
 }
 
-.first{
-font-size:26px;
-font-weight:bold;
-color:#00ff66;
+.title{
+
+font-size:38px;
+
+font-weight:700;
+
+margin-bottom:8px;
 }
 
-.second{
-font-size:16px;
-color:#999;
+.weather{
+
+font-size:18px;
+
+margin-bottom:6px;
+}
+
+.warning{
+
+font-size:17px;
+
+font-weight:700;
+
+color:#ffe082;
+}
+
+.clock{
+
+font-size:52px;
+
+font-weight:700;
+}
+
+.date{
+
+font-size:18px;
+
 margin-top:4px;
 }
 
+.grid{
+
+display:grid;
+
+grid-template-columns:1fr 1fr;
+
+gap:14px;
+
+}
+
+.card{
+
+background:#070707;
+
+border:1px solid #1a1a1a;
+
+border-radius:22px;
+
+padding:24px;
+
+min-height:260px;
+}
+
+.top{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:flex-start;
+
+margin-bottom:16px;
+}
+
+.route{
+
+font-size:72px;
+
+font-weight:700;
+}
+
+.dest{
+
+font-size:18px;
+
+color:#aaa;
+
+margin-top:10px;
+}
+
+.eta-row{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+padding:14px 0;
+
+border-top:1px solid #1f1f1f;
+}
+
+.bus-label{
+
+font-size:20px;
+
+color:#888;
+}
+
+.eta{
+
+font-size:38px;
+
+font-weight:700;
+
+color:#00ff66;
+}
+
 .arriving{
+
 color:#ffd600;
+
 animation:pulse 1s infinite;
 }
 
 @keyframes pulse{
+
 50%{
 opacity:0.4;
 }
+
 }
 
 .footer{
+
 text-align:center;
+
 color:#666;
-margin-top:12px;
+
 font-size:14px;
+
+margin-top:10px;
+}
+
+@media(max-width:1024px){
+
+.grid{
+grid-template-columns:1fr;
+}
+
+.route{
+font-size:56px;
+}
+
+.clock{
+font-size:40px;
+}
+
 }
 
 </style>
 </head>
-
 <body>
 
 <div class="header">
 
+<div class="header-left">
+
 <div class="title">
-🚍 承景街
+🚍 承景街巴士到站時間
 </div>
 
 <div class="weather" id="weather">
 載入天氣中...
 </div>
 
+<div class="warning" id="warning">
+</div>
+
+</div>
+
+<div class="header-right">
+
 <div class="clock" id="clock">
 --
 </div>
 
-</div>
-
-<div class="card">
-<div class="left">
-<div class="route">20A</div>
-<div class="dest">西九龍站</div>
-</div>
-<div class="right" id="eta20A">
+<div class="date" id="date">
 --
 </div>
+
 </div>
 
-<div class="card">
-<div class="left">
-<div class="route">22</div>
-<div class="dest">九龍塘（又一城）</div>
-</div>
-<div class="right" id="eta22">
---
-</div>
 </div>
 
-<div class="card">
-<div class="left">
-<div class="route">22D</div>
-<div class="dest">啟德站</div>
-</div>
-<div class="right" id="eta22D">
---
-</div>
-</div>
+<div class="grid">
 
-<div class="card">
-<div class="left">
-<div class="route">22M</div>
-<div class="dest">土瓜灣</div>
-</div>
-<div class="right" id="eta22M">
---
-</div>
-</div>
+<div class="card" id="card20A"></div>
 
-<div class="card">
-<div class="left">
-<div class="route">5R</div>
-<div class="dest">觀塘（APM）</div>
-</div>
-<div class="right" id="eta5R">
---
-</div>
+<div class="card" id="card22"></div>
+
+<div class="card" id="card22D"></div>
+
+<div class="card" id="card22M"></div>
+
 </div>
 
 <div class="footer">
@@ -183,156 +263,55 @@ font-size:14px;
 const STOP_ID = "003790";
 
 const ROUTES = [
-"20A",
-"22",
-"22D",
-"22M",
-"5R"
+
+{
+route:"20A",
+dest:"高鐵西九龍站"
+},
+
+{
+route:"22",
+dest:"九龍塘（又一城）"
+},
+
+{
+route:"22D",
+dest:"啟德站"
+},
+
+{
+route:"22M",
+dest:"土瓜灣"
+}
+
 ];
 
 function updateClock(){
 
+const now = new Date();
+
 document.getElementById("clock").innerHTML =
-new Date().toLocaleTimeString("zh-HK");
+now.toLocaleTimeString("zh-HK");
+
+document.getElementById("date").innerHTML =
+now.toLocaleDateString(
+"zh-HK",
+{
+year:"numeric",
+month:"long",
+day:"numeric",
+weekday:"long"
+}
+);
 
 }
 
 setInterval(updateClock,1000);
+
 updateClock();
 
-async function loadWeather(){
+function renderCard(route,dest,etas){
 
-try{
+let html=`
 
-const res = await fetch(
-"https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread&lang=tc"
-);
-
-const data = await res.json();
-
-const temp =
-data.temperature.data[1].value;
-
-const humidity =
-data.humidity.data[0].value;
-
-document.getElementById("weather").innerHTML =
-`🌡️ ${temp}°C　💧 ${humidity}%`;
-
-}catch(e){
-
-document.getElementById("weather").innerHTML =
-"天氣資料未能載入";
-
-}
-}
-
-async function loadETA(route){
-
-try{
-
-const res = await fetch(
-`https://rt.data.gov.hk/v1/transport/citybus-nwfb/eta/ctb/${STOP_ID}/${route}`
-);
-
-const json = await res.json();
-
-const target =
-document.getElementById(
-"eta" + route
-);
-
-if(
-!json.data ||
-json.data.length === 0
-){
-
-target.innerHTML="--";
-return;
-
-}
-
-const firstEta =
-new Date(json.data[0].eta);
-
-const firstMin =
-Math.round(
-(firstEta - new Date())
-/
-60000
-);
-
-let firstText;
-
-if(firstMin <= 1){
-
-firstText =
-'<div class="first arriving">🏃趕唔切啦</div>';
-
-}else{
-
-firstText =
-`<div class="first">${firstMin}分鐘</div>`;
-
-}
-
-let secondText = "";
-
-if(
-json.data.length > 1 &&
-json.data[1].eta
-){
-
-const secondEta =
-new Date(json.data[1].eta);
-
-const secondMin =
-Math.round(
-(secondEta - new Date())
-/
-60000
-);
-
-secondText =
-`<div class="second">
-下班 ${secondMin}分鐘
-</div>`;
-}
-
-target.innerHTML =
-firstText + secondText;
-
-}catch(e){
-
-console.log(e);
-
-}
-}
-
-async function refreshETA(){
-
-for(const route of ROUTES){
-
-await loadETA(route);
-
-}
-
-}
-
-loadWeather();
-refreshETA();
-
-setInterval(
-refreshETA,
-15000
-);
-
-setInterval(
-loadWeather,
-600000
-);
-
-</script>
-
-</body>
-</html>
+<div
