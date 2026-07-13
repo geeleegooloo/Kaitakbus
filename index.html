@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-HK">
+<html lang=
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,145 +7,139 @@
 <title>承景街巴士資訊</title>
 
 <style>
-
 *{
-margin:0;
-padding:0;
-box-sizing:border-box;
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
 }
 
 body{
-background:#000;
-color:#fff;
-font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+    background:#000;
+    color:#fff;
+    font-family:-apple-system,BlinkMacSystemFont,sans-serif;
 }
 
 .header{
-background:#d61f26;
-padding:20px;
-display:flex;
-justify-content:space-between;
-align-items:center;
+    background:#d61f26;
+    padding:20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
 }
 
 .title{
-font-size:36px;
-font-weight:bold;
+    font-size:36px;
+    font-weight:bold;
 }
 
 .info{
-font-size:20px;
-line-height:1.5;
+    font-size:20px;
+    line-height:1.5;
 }
 
 .clock{
-font-size:42px;
-font-weight:bold;
+    font-size:42px;
+    font-weight:bold;
 }
 
-iframe{
-width:100%;
-height:calc(100vh - 140px);
-border:none;
-background:#fff;
+.main{
+    text-align:center;
+    padding:60px 20px;
 }
 
+.btn{
+    display:inline-block;
+    margin-top:30px;
+    background:#00c853;
+    color:white;
+    padding:20px 40px;
+    font-size:28px;
+    text-decoration:none;
+    border-radius:12px;
+}
 </style>
-</head>
 
+</head>
 <body>
 
 <div class="header">
 
-<div>
+    <div>
+        <div class="title">
+            🚍 承景街巴士資訊
+        </div>
 
-<div class="title">
-🚍 承景街巴士資訊
-</div>
+        <div class="info" id="weather">
+            載入天氣中...
+        </div>
+    </div>
 
-<div class="info" id="weather">
-載入天氣中...
-</div>
-
-</div>
-
-<div class="clock" id="clock">
---
-</div>
+    <div class="clock" id="clock">
+        --
+    </div>
 
 </div>
 
-<div style="
-padding:40px;
-text-align:center;
-font-size:32px;
-">
+<div class="main">
 
-<p>🚍 巴士時間</p>
+    <h1>巴士時間</h1>
 
-<p style="margin-top:20px;">
-<a
-href="https://hkbustime.com"
-target="_blank"
-style="
-color:#00ff66;
-font-size:40px;
-text-decoration:none;
-">
-開啟 HK Bus Time
-</a>
-</p>
+    <p style="margin-top:20px;font-size:22px;">
+        開啟 HK Bus Time 查看即時 ETA
+    </p>
+
+    <a
+      class="btn"
+      href="https://hkbustime.com"
+      target="_blank">
+      開啟 HK Bus Time
+    </a>
 
 </div>
 
 <script>
 
 function updateClock(){
-
-document.getElementById("clock").innerHTML=
-new Date().toLocaleTimeString("zh-HK");
-
+    document.getElementById("clock").innerHTML =
+        new Date().toLocaleTimeString("zh-HK");
 }
 
 setInterval(updateClock,1000);
-
 updateClock();
 
 async function loadWeather(){
 
-try{
+    try{
 
-const res =
-await fetch(
-"https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread&lang=tc"
-);
+        const res = await fetch(
+            "https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread&lang=tc"
+        );
 
-const data =
-await res.json();
+        const data = await res.json();
 
-const temp =
-data.temperature.data[1].value;
+        const temp =
+            data.temperature.data[1].value;
 
-const humid =
-data.humidity.data[0].value;
+        const humid =
+            data.humidity.data[0].value;
 
-document.getElementById("weather").innerHTML =
-`🌡️ ${temp}°C　💧 ${humid}%`;
+        document.getElementById("weather").innerHTML =
+            `🌡️ ${temp}°C　💧 ${humid}%`;
 
-}catch(e){
+    }catch(e){
 
-document.getElementById("weather").innerHTML =
-"天氣資料未能載入";
+        document.getElementById("weather").innerHTML =
+            "天氣資料未能載入";
 
-}
+    }
 
 }
 
 loadWeather();
 
 setInterval(
-loadWeather,
-600000
+    loadWeather,
+    600000
 );
 
 </script>
