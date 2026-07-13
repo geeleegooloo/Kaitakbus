@@ -1,205 +1,53 @@
 <!DOCTYPE html>
 <html lang="zh-HK">
 <head>
-
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>承景街巴士到站時間</title>
+<title>承景街巴士資訊</title>
 
 <style>
 
-:root{
-    --bg:#000;
-    --card:#111;
-    --green:#00ff66;
-    --red:#d61f26;
-    --white:#fff;
-    --grey:#999;
-    --border:#222;
-}
-
 *{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+margin:0;
+padding:0;
+box-sizing:border-box;
 }
 
 body{
-    font-family:-apple-system,BlinkMacSystemFont,sans-serif;
-    background:var(--bg);
-    color:white;
-    min-height:100vh;
-    padding:20px;
+background:#000;
+color:#fff;
+font-family:-apple-system,BlinkMacSystemFont,sans-serif;
 }
 
 .header{
-
-    background:linear-gradient(
-        135deg,
-        #d61f26,
-        #b9151b
-    );
-
-    border-radius:24px;
-
-    padding:25px;
-
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-
-    margin-bottom:20px;
+background:#d61f26;
+padding:20px;
+display:flex;
+justify-content:space-between;
+align-items:center;
 }
 
 .title{
-    font-size:42px;
-    font-weight:700;
+font-size:36px;
+font-weight:bold;
 }
 
-.weather{
-    margin-top:10px;
-    font-size:22px;
-    color:#ffe082;
-}
-
-.warning{
-    margin-top:8px;
-    color:#fff;
-    font-weight:700;
-    font-size:18px;
+.info{
+font-size:20px;
+line-height:1.5;
 }
 
 .clock{
-    font-size:56px;
-    font-weight:700;
-    text-align:right;
+font-size:42px;
+font-weight:bold;
 }
 
-.date{
-    font-size:20px;
-    text-align:right;
-}
-
-.grid{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:20px;
-}
-
-.card{
-
-    background:var(--card);
-
-    border:1px solid var(--border);
-
-    border-radius:24px;
-
-    padding:24px;
-}
-
-.route-top{
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-
-    margin-bottom:15px;
-}
-
-.route{
-
-    font-size:72px;
-
-    font-weight:700;
-}
-
-.dest{
-
-    font-size:20px;
-
-    color:#bbb;
-}
-
-.eta-row{
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-
-    padding:14px 0;
-
-    border-top:1px solid #222;
-}
-
-.bus-label{
-
-    color:#888;
-
-    font-size:18px;
-}
-
-.eta{
-
-    color:var(--green);
-
-    font-size:36px;
-
-    font-weight:700;
-}
-
-.footer{
-
-    margin-top:20px;
-
-    text-align:center;
-
-    color:#666;
-
-    font-size:18px;
-}
-
-.arriving{
-
-    color:#ffd54f !important;
-
-    animation:pulse 1s infinite;
-}
-
-@keyframes pulse {
-
-0%{
-opacity:1;
-}
-
-50%{
-opacity:0.4;
-}
-
-100%{
-opacity:1;
-}
-
-}
-
-@media(max-width:900px){
-
-.grid{
-grid-template-columns:1fr;
-}
-
-.route{
-font-size:56px;
-}
-
-.clock{
-font-size:40px;
-}
-
+iframe{
+width:100%;
+height:calc(100vh - 140px);
+border:none;
+background:#fff;
 }
 
 </style>
@@ -209,89 +57,33 @@ font-size:40px;
 
 <div class="header">
 
-    <div>
+<div>
 
-        <div class="title">
-            🚍 承景街巴士到站時間
-        </div>
+<div class="title">
+🚍 承景街巴士資訊
+</div>
 
-        <div class="weather" id="weather">
-            載入天氣資料...
-        </div>
-
-        <div class="warning" id="warning">
-        </div>
-
-    </div>
-
-    <div>
-
-        <div class="clock" id="clock"></div>
-
-        <div class="date" id="date"></div>
-
-    </div>
+<div class="info" id="weather">
+載入天氣中...
+</div>
 
 </div>
 
-<div class="grid">
-
-    <div class="card" id="card20A"></div>
-    <div class="card" id="card22"></div>
-    <div class="card" id="card22D"></div>
-    <div class="card" id="card22M"></div>
+<div class="clock" id="clock">
+--
+</div>
 
 </div>
 
-<div class="footer">
-承景街（Shing King Street） ｜ 自動更新 ETA 每15秒
-</div>
+kbustime.com">
+</iframe>
 
 <script>
 
-const STOP_ID = "003554";
-
-const ROUTES = [
-
-{
-route:"20A",
-dest:"高鐵西九龍站"
-},
-
-{
-route:"22",
-dest:"九龍塘（又一城）"
-},
-
-{
-route:"22D",
-dest:"啟德站"
-},
-
-{
-route:"22M",
-dest:"土瓜灣"
-}
-
-];
-
 function updateClock(){
 
-const now=new Date();
-
 document.getElementById("clock").innerHTML=
-now.toLocaleTimeString("zh-HK");
-
-document.getElementById("date").innerHTML=
-now.toLocaleDateString(
-"zh-HK",
-{
-year:"numeric",
-month:"long",
-day:"numeric",
-weekday:"long"
-}
-);
+new Date().toLocaleTimeString("zh-HK");
 
 }
 
@@ -299,162 +91,14 @@ setInterval(updateClock,1000);
 
 updateClock();
 
-function createCard(route,dest,etas){
-
-let html=`
-
-<div class="route-top">
-
-<div class="route">
-${route}
-</div>
-
-<div class="dest">
-${dest}
-</div>
-
-</div>
-
-`;
-
-for(let i=0;i<3;i++){
-
-const eta=etas[i] || "--";
-
-const arriving =
-eta==="即將到站"
-?
-"arriving"
-:
-"";
-
-html+=`
-
-<div class="eta-row">
-
-<div class="bus-label">
-第 ${i+1} 班
-</div>
-
-<div class="eta ${arriving}">
-${eta}
-</div>
-
-</div>
-
-`;
-
-}
-
-document.getElementById(
-"card"+route
-).innerHTML=html;
-
-}
-
-async function getRouteETA(route,dest){
-
-try{
-
-const url=
-`https://rt.data.gov.hk/v2/transport/citybus/eta/CTB/${STOP_ID}/${route}`;
-console.log(url);
-const res=
-await fetch(url);
-
-const json=
-await res.json();
-    
-console.log(json);
-const result=[];
-
-if(json.data){
-
-const buses=
-json.data
-.filter(bus=>bus.eta)
-.slice(0,3);
-
-for(const bus of buses){
-
-const etaTime=
-new Date(bus.eta);
-
-const diff=
-Math.round(
-(etaTime - new Date())
-/
-60000
-);
-
-if(diff <= 1){
-
-result.push(
-"即將到站"
-);
-
-}
-else{
-
-result.push(
-diff + " 分鐘"
-);
-
-}
-
-}
-
-}
-
-createCard(
-route,
-dest,
-result
-);
-
-}catch(error){
-
-console.log(error);
-
-createCard(
-route,
-dest,
-[]
-);
-
-}
-
-}
-
-async function refreshETA(){
-
-for(const item of ROUTES){
-
-await getRouteETA(
-item.route,
-item.dest
-);
-
-}
-
-}
-
-refreshETA();
-
-setInterval(
-refreshETA,
-15000
-);
-
 async function loadWeather(){
 
 try{
 
-const url =
-"https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread&lang=tc";
-
 const res =
-await fetch(url);
+await fetch(
+"https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread&lang=tc"
+);
 
 const data =
 await res.json();
@@ -462,77 +106,26 @@ await res.json();
 const temp =
 data.temperature.data[1].value;
 
-const humidity =
+const humid =
 data.humidity.data[0].value;
 
-document.getElementById(
-"weather"
-).innerHTML =
-`🌡️ ${temp}°C　💧 ${humidity}%`;
+document.getElementById("weather").innerHTML =
+`🌡️ ${temp}°C　💧 ${humid}%`;
 
-}catch(err){
+}catch(e){
 
-console.log(err);
-
-}
-
-}
-
-async function loadWarning(){
-
-try{
-
-const url =
-"https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=warnsum&lang=tc";
-
-const res =
-await fetch(url);
-
-const data =
-await res.json();
-
-let warnings=[];
-
-for(const key in data){
-
-if(data[key].actionCode !== "CANCEL"){
-
-warnings.push(
-data[key].name
-);
-
-}
-
-}
-
-document.getElementById(
-"warning"
-).innerHTML =
-warnings.length
-?
-"⚠️ " + warnings.join(" ｜ ")
-:
-"";
-
-}catch(err){
-
-console.log(err);
+document.getElementById("weather").innerHTML =
+"天氣資料未能載入";
 
 }
 
 }
 
 loadWeather();
-loadWarning();
 
 setInterval(
 loadWeather,
 600000
-);
-
-setInterval(
-loadWarning,
-300000
 );
 
 </script>
