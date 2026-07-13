@@ -1,107 +1,129 @@
 <!DOCTYPE html>
-<html lang=
+<html lang="zh-HK">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>承景街巴士資訊</title>
+<title>承景街巴士到站時間</title>
 
 <style>
+
 *{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+margin:0;
+padding:0;
+box-sizing:border-box;
 }
 
 body{
-    background:#000;
-    color:#fff;
-    font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+background:#000;
+color:white;
+font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+padding:15px;
 }
 
 .header{
-    background:#d61f26;
-    padding:20px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
+background:#d61f26;
+border-radius:20px;
+padding:20px;
+margin-bottom:15px;
 }
 
 .title{
-    font-size:36px;
-    font-weight:bold;
+font-size:36px;
+font-weight:bold;
 }
 
-.info{
-    font-size:20px;
-    line-height:1.5;
+.weather{
+margin-top:8px;
+font-size:18px;
 }
 
 .clock{
-    font-size:42px;
-    font-weight:bold;
+font-size:42px;
+font-weight:bold;
+margin-top:10px;
 }
 
-.main{
-    text-align:center;
-    padding:60px 20px;
+.card{
+background:#111;
+border-radius:18px;
+padding:20px;
+margin-bottom:12px;
+display:flex;
+justify-content:space-between;
+align-items:center;
 }
 
-.btn{
-    display:inline-block;
-    margin-top:30px;
-    background:#00c853;
-    color:white;
-    padding:20px 40px;
-    font-size:28px;
-    text-decoration:none;
-    border-radius:12px;
+.route{
+font-size:50px;
+font-weight:bold;
 }
+
+.eta{
+font-size:30px;
+font-weight:bold;
+color:#00ff66;
+}
+
+.arriving{
+color:#ffd600;
+animation:blink 1s infinite;
+}
+
+@keyframes blink{
+50%{
+opacity:0.4;
+}
+}
+
 </style>
-
 </head>
 <body>
 
 <div class="header">
 
-    <div>
-        <div class="title">
-            🚍 承景街巴士資訊
-        </div>
+<div class="title">
+🚍 承景街
+</div>
 
-        <div class="info" id="weather">
-            載入天氣中...
-        </div>
-    </div>
+<div class="weather" id="weather">
+載入天氣中...
+</div>
 
-    <div class="clock" id="clock">
-        --
-    </div>
+<div class="clock" id="clock">
+--
+</div>
 
 </div>
 
-<div class="main">
+<div class="card">
+<div class="route">20A</div>
+<div class="eta" id="eta20A">--</div>
+</div>
 
-    <h1>巴士時間</h1>
+<div class="card">
+<div class="route">22</div>
+<div class="eta" id="eta22">--</div>
+</div>
 
-    <p style="margin-top:20px;font-size:22px;">
-        開啟 HK Bus Time 查看即時 ETA
-    </p>
+<div class="card">
+<div class="route">22D</div>
+<div class="eta" id="eta22D">--</div>
+</div>
 
-    <a
-      class="btn"
-      href="https://hkbustime.com"
-      target="_blank">
-      開啟 HK Bus Time
-    </a>
-
+<div class="card">
+<div class="route">22M</div>
+<div class="eta" id="eta22M">--</div>
 </div>
 
 <script>
 
+const STOP_ID = "003790";
+const ROUTES = ["20A","22","22D","22M"];
+
 function updateClock(){
-    document.getElementById("clock").innerHTML =
-        new Date().toLocaleTimeString("zh-HK");
+document.getElementById("clock").innerHTML =
+new Date().toLocaleTimeString("zh-HK");
 }
 
 setInterval(updateClock,1000);
@@ -109,37 +131,112 @@ updateClock();
 
 async function loadWeather(){
 
-    try{
+try{
 
-        const res = await fetch(
-            "https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread&lang=tc"
-        );
+const res = await fetch(
+"https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread&lang=tc"
+);
 
-        const data = await res.json();
+const data = await res.json();
 
-        const temp =
-            data.temperature.data[1].value;
+const temp =
+data.temperature.data[1].value;
 
-        const humid =
-            data.humidity.data[0].value;
+const humidity =
+data.humidity.data[0].value;
 
-        document.getElementById("weather").innerHTML =
-            `🌡️ ${temp}°C　💧 ${humid}%`;
+document.getElementById("weather").innerHTML =
+`🌡️ ${temp}°C　💧 ${humidity}%`;
 
-    }catch(e){
+}catch(e){
 
-        document.getElementById("weather").innerHTML =
-            "天氣資料未能載入";
+document.getElementById("weather").innerHTML =
+"天氣資料未能載入";
 
-    }
+}
+
+}
+
+async function loadETA(route){
+
+try{
+
+const url =
+`https://rt.data.gov.hk/v1/transport/citybus-nwfb/eta/ctb/${STOP_ID}/${route}`;
+
+const res =
+await fetch(url);
+
+const json =
+await res.json();
+
+const target =
+document.getElementById(
+"eta"+route
+);
+
+if(
+!json.data ||
+json.data.length===0
+){
+target.innerHTML="--";
+return;
+}
+
+const etaTime =
+new Date(json.data[0].eta);
+
+const diff =
+Math.round(
+(etaTime - new Date())
+/60000
+);
+
+if(diff<=1){
+
+target.innerHTML="即將到站";
+target.classList.add("arriving");
+
+}
+else{
+
+target.innerHTML=
+diff+"分鐘";
+
+target.classList.remove("arriving");
+
+}
+
+}catch(err){
+
+console.log(err);
+
+}
+
+}
+
+async function refresh(){
+
+for(const route of ROUTES){
+
+await loadETA(route);
+
+}
 
 }
 
 loadWeather();
 
+refresh();
+
 setInterval(
-    loadWeather,
-    600000
+refresh,
+15000
+);
+
+setInterval(
+loadWeather,
+600000
 );
 
 </script>
