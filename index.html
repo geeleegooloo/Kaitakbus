@@ -24,24 +24,24 @@ padding:15px;
 .header{
 background:#d61f26;
 border-radius:20px;
-padding:20px;
-margin-bottom:15px;
+padding:15px;
+margin-bottom:12px;
 }
 
 .title{
-font-size:34px;
+font-size:28px;
 font-weight:bold;
 }
 
 .weather{
-margin-top:8px;
-font-size:18px;
+margin-top:6px;
+font-size:16px;
 }
 
 .clock{
-font-size:42px;
+font-size:30px;
 font-weight:bold;
-margin-top:10px;
+margin-top:8px;
 }
 
 .card{
@@ -74,7 +74,7 @@ text-align:right;
 }
 
 .first{
-font-size:30px;
+font-size:26px;
 font-weight:bold;
 color:#00ff66;
 }
@@ -105,6 +105,7 @@ font-size:14px;
 
 </style>
 </head>
+
 <body>
 
 <div class="header">
@@ -163,6 +164,16 @@ font-size:14px;
 </div>
 </div>
 
+<div class="card">
+<div class="left">
+<div class="route">5R</div>
+<div class="dest">觀塘（APM）</div>
+</div>
+<div class="right" id="eta5R">
+--
+</div>
+</div>
+
 <div class="footer">
 承景街（003790）｜ 每15秒更新
 </div>
@@ -175,7 +186,8 @@ const ROUTES = [
 "20A",
 "22",
 "22D",
-"22M"
+"22M",
+"5R"
 ];
 
 function updateClock(){
@@ -255,7 +267,7 @@ let firstText;
 if(firstMin <= 1){
 
 firstText =
-'<div class="first arriving">即將到站</div>';
+'<div class="first arriving">🏃趕唔切啦</div>';
 
 }else{
 
