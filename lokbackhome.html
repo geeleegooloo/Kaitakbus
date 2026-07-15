@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>返屋企巴士</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+background:#000;
+color:#fff;
+font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+padding:8px;
+}
+
+.header{
+background:#0d47a1;
+border-radius:18px;
+padding:12px 14px;
+margin-bottom:10px;
+}
+
+.title{
+font-size:20px;
+font-weight:700;
+margin-bottom:8px;
+}
+
+.weather{
+font-size:13px;
+margin-bottom:8px;
+}
+
+.clock{
+font-size:28px;
+font-weight:700;
+line-height:1.1;
+}
+
+.date{
+font-size:12px;
+margin-top:4px;
+}
+
+.card{
+background:#111;
+border-radius:18px;
+padding:16px;
+margin-bottom:10px;
+display:flex;
+justify-content:space-between;
+align-items:flex-start;
+}
+
+.left{
+flex:1;
+}
+
+.right{
+text-align:right;
+}
+
+.route{
+font-size:42px;
+font-weight:700;
+line-height:1;
+}
+
+.dest{
+font-size:15px;
+color:#999;
+margin-top:5px;
+}
+
+.eta-main{
+font-size:32px;
+font-weight:700;
+color:#00ff66;
+}
+
+.eta-next{
+font-size:18px;
+color:#888;
+margin-top:6px;
+}
+
+.arriving{
+color:#ffd600 !important;
+animation:pulse 1s infinite;
+}
+
+@keyframes pulse{
+50%{
+opacity:0.4;
+}
+}
+
+.footer{
+text-align:center;
+font-size:11px;
+color:#666;
+margin-top:8px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+
+<div class="title">
+🏠 返屋企巴士
+</div>
+
+<div class="weather" id="weather">
+載入天氣中...
+</div>
+
+<div class="clock" id="clock">
+--
+</div>
+
+<div class="date" id="date">
+--
+</div>
+
+</div>
+
+<div class="card" id="card22"></div>
+<div class="card" id="card22M"></div>
+
+<div class="footer">
+宏照道（003312）｜ 每15秒更新
+</div>
+
+<script>
+
+const STOP_ID = "003312";
+
+const ROUTES = [
+
+{
+route:"22",
+dest:"啟德郵輪碼頭"
+},
+
+{
+route:"22M",
+dest:"啟德站"
+}
+
+];
+
+function updateClock(){
+
+const now=new Date();
+
+document.getElementById("clock").innerHTML=
+now.toLocaleTimeString("zh-HK");
+
+document.getElementById("date").innerHTML=
+now.toLocaleDateString(
+"zh-HK",
+{
+year:"numeric",
+month:"long",
+day:"numeric",
+weekday:"long"
+}
+);
+
+}
+
+setInterval(updateClock,1000);
+
+updateClock();
+
+function renderCard(route,dest,etas){
+
+const first=etas[0]||"--";
+const second=etas[1]||"--";
+
+const arriving=
+first.includes("衝呀")
+?
+"arriving"
+:
+"";
+
+document.getElementById(
+"card"+route
+).innerHTML=
+
+`
+<div class="left">
+
+<div class="route">
+${route}
+</div>
+
+<div class="dest">
+${dest}
+</div>
+
+</div>
+
+<div class="right">
+
+<div class="eta-main ${arriving}">
+${first}
+</div>
+
+<div class="eta-next">
+下班 ${second}
+</div>
+
+</div>
+`;
+
+}
+
+async function loadETA(item){
+
+try{
+
+const res=
+await fetch(
+`https://rt.data.gov.hk/v1/transport/citybus-nwfb/eta/ctb/${STOP_ID}/${item.route}`
+);
+
+const json=
+await res.json();
+
+let etas=[];
+
+if(json.data && json.data.length){
+
+const buses=
+json.data
+.filter(x=>x.eta)
+.slice(0,2);
+
+for(const bus of buses){
+
+const mins=
+Math.round(
+(new Date(bus.eta)-new Date())/60000
+);
+
+if(mins<=1){
+
+etas.push("🏃 衝呀");
+
+}else{
+
+etas.push(mins+"分鐘");
+
+}
+
+}
+
+}
+
+renderCard(
+item.route,
+item.dest,
+etas
+);
+
+}catch(e){
+
+renderCard(
+item.route,
+item.dest,
+[]
+);
+
+}
+
+}
+
+async function refreshETA(){
+
+for(const item of ROUTES){
+
+await loadETA(item);
+
+}
+
+}
+
+async function loadWeather(){
+
+try{
+
+const res=
+await fetch(
+"https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread&lang=tc"
+);
+
+const data=
+await res.json();
+
+const temp=
+data.temperature.data[1].value;
+
+const humid=
+data.humidity.data[0].value;
+
+document.getElementById(
+"weather"
+).innerHTML=
+`🌡️ ${temp}°C　💧 ${humid}%`;
+
+}catch(e){}
+
+}
+
+loadWeather();
+refreshETA();
+
+setInterval(refreshETA,15000);
+setInterval(loadWeather,600000);
+
+</script>
+
+</body>
+</html>
