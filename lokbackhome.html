@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="返屋企巴士">
+
 <title>返屋企巴士</title>
 
 <style>
@@ -92,6 +96,11 @@ color:#888;
 margin-top:6px;
 }
 
+.arriving{
+color:#ffd600 !important;
+animation:pulse 1s infinite;
+}
+
 .warning{
 color:#ff5722 !important;
 animation:pulse 1s infinite;
@@ -118,7 +127,7 @@ margin-top:8px;
 <div class="header">
 
 <div class="title">
-🏠 返屋企巴士
+🏠 返屋企
 </div>
 
 <div class="weather" id="weather">
@@ -162,12 +171,12 @@ dest:"啟德站"
 
 function updateClock(){
 
-const now=new Date();
+const now = new Date();
 
-document.getElementById("clock").innerHTML=
+document.getElementById("clock").innerHTML =
 now.toLocaleTimeString("zh-HK");
 
-document.getElementById("date").innerHTML=
+document.getElementById("date").innerHTML =
 now.toLocaleDateString(
 "zh-HK",
 {
@@ -186,11 +195,11 @@ updateClock();
 
 function renderCard(route,dest,etas){
 
-const first=etas[0]||"--";
-const second=etas[1]||"--";
+const first = etas[0] || "--";
+const second = etas[1] || "--";
 
 let etaClass = "";
-  
+
 if(first.includes("衝呀")){
 
 etaClass = "arriving";
@@ -205,7 +214,12 @@ etaClass = "warning";
 
 }
 
-}  
+}
+
+document.getElementById(
+"card"+route
+).innerHTML =
+
 `
 <div class="left">
 
@@ -238,37 +252,45 @@ async function loadETA(item){
 
 try{
 
-const res=
+const res =
 await fetch(
 `https://rt.data.gov.hk/v1/transport/citybus-nwfb/eta/ctb/${STOP_ID}/${item.route}`
 );
 
-const json=
+const json =
 await res.json();
 
-let etas=[];
+let etas = [];
 
-if(json.data && json.data.length){
+if(
+json.data &&
+json.data.length
+){
 
-const buses=
+const buses =
 json.data
 .filter(x=>x.eta)
 .slice(0,2);
 
 for(const bus of buses){
 
-const mins=
+const mins =
 Math.round(
-(new Date(bus.eta)-new Date())/60000
+(new Date(bus.eta)-new Date())
+/60000
 );
 
-if(mins<=1){
+if(mins <= 1){
 
-etas.push("🏃 衝呀");
+etas.push(
+"🏃 衝呀"
+);
 
 }else{
 
-etas.push(mins+"分鐘");
+etas.push(
+mins + "分鐘"
+);
 
 }
 
@@ -308,26 +330,33 @@ async function loadWeather(){
 
 try{
 
-const res=
+const res =
 await fetch(
 "https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread&lang=tc"
 );
 
-const data=
+const data =
 await res.json();
 
-const temp=
+const temp =
 data.temperature.data[1].value;
 
-const humid=
+const humid =
 data.humidity.data[0].value;
 
 document.getElementById(
 "weather"
-).innerHTML=
+).innerHTML =
 `🌡️ ${temp}°C　💧 ${humid}%`;
 
-}catch(e){}
+}catch(e){
+
+document.getElementById(
+"weather"
+).innerHTML =
+"天氣資料未能載入";
+
+}
 
 }
 
