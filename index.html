@@ -4,7 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>承景街</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="承景街巴士">
+
+<title>承景街巴士到站時間</title>
 
 <style>
 
@@ -22,62 +26,41 @@ padding:8px;
 }
 
 .header{
-
 background:#d61f26;
-
 border-radius:18px;
-
 padding:12px 14px;
-
 margin-bottom:10px;
 }
 
 .title{
-
 font-size:20px;
-
 font-weight:700;
-
 margin-bottom:8px;
 }
 
 .weather{
-
 font-size:13px;
-
 margin-bottom:8px;
 }
 
 .clock{
-
 font-size:28px;
-
 font-weight:700;
-
 line-height:1.1;
 }
 
 .date{
-
 font-size:12px;
-
 margin-top:4px;
 }
 
 .card{
-
 background:#111;
-
 border-radius:18px;
-
 padding:16px;
-
 margin-bottom:10px;
-
 display:flex;
-
 justify-content:space-between;
-
 align-items:flex-start;
 }
 
@@ -90,64 +73,49 @@ text-align:right;
 }
 
 .route{
-
 font-size:42px;
-
 font-weight:700;
-
 line-height:1;
 }
 
 .dest{
-
 font-size:15px;
-
 color:#999;
-
 margin-top:5px;
 }
 
 .eta-main{
-
 font-size:32px;
-
 font-weight:700;
-
 color:#00ff66;
 }
 
 .eta-next{
-
 font-size:18px;
-
 color:#888;
-
 margin-top:6px;
 }
 
 .arriving{
-
 color:#ffd600 !important;
+animation:pulse 1s infinite;
+}
 
+.warning{
+color:#ff5722 !important;
 animation:pulse 1s infinite;
 }
 
 @keyframes pulse{
-
 50%{
 opacity:0.4;
 }
-
 }
 
 .footer{
-
 text-align:center;
-
 font-size:11px;
-
 color:#666;
-
 margin-top:8px;
 }
 
@@ -242,12 +210,23 @@ function renderCard(route,dest,etas){
 const first = etas[0] || "--";
 const second = etas[1] || "--";
 
-const arriving =
-first.includes("衝呀")
-?
-"arriving"
-:
-"";
+let etaClass = "";
+
+if(first.includes("衝呀")){
+
+etaClass = "arriving";
+
+}else{
+
+const mins = parseInt(first);
+
+if(!isNaN(mins) && mins <= 5){
+
+etaClass = "warning";
+
+}
+
+}
 
 document.getElementById(
 "card"+route
@@ -268,7 +247,7 @@ ${dest}
 
 <div class="right">
 
-<div class="eta-main ${arriving}">
+<div class="eta-main ${etaClass}">
 ${first}
 </div>
 
@@ -316,7 +295,7 @@ Math.round(
 if(mins <= 1){
 
 etas.push(
-"🏃 衝呀!!"
+"🏃 衝呀"
 );
 
 }else{
