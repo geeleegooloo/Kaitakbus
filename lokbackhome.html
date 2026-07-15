@@ -92,8 +92,8 @@ color:#888;
 margin-top:6px;
 }
 
-.arriving{
-color:#ffd600 !important;
+.warning{
+color:#ff5722 !important;
 animation:pulse 1s infinite;
 }
 
@@ -189,17 +189,23 @@ function renderCard(route,dest,etas){
 const first=etas[0]||"--";
 const second=etas[1]||"--";
 
-const arriving=
-first.includes("衝呀")
-?
-"arriving"
-:
-"";
+let etaClass = "";
+  
+if(first.includes("衝呀")){
 
-document.getElementById(
-"card"+route
-).innerHTML=
+etaClass = "arriving";
 
+}else{
+
+const mins = parseInt(first);
+
+if(!isNaN(mins) && mins <= 5){
+
+etaClass = "warning";
+
+}
+
+}  
 `
 <div class="left">
 
@@ -215,7 +221,7 @@ ${dest}
 
 <div class="right">
 
-<div class="eta-main ${arriving}">
+<div class="eta-main ${etaClass}">
 ${first}
 </div>
 
